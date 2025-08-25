@@ -6,6 +6,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/Hasan-Al-Khazraji/CuckooCache/internal/partition"
+	"github.com/Hasan-Al-Khazraji/CuckooCache/internal/partition/consistent"
 	"github.com/Hasan-Al-Khazraji/CuckooCache/internal/partition/static"
 	"github.com/Hasan-Al-Khazraji/CuckooCache/internal/proto"
 )
@@ -17,17 +19,26 @@ type Config struct {
 	MaxKeyBytes   uint16
 	MaxValueBytes uint32
 	Workers       []string
+	Partitioner   string // static, consistent
+	Vnodes        int
 }
 
 type Orchestrator struct {
 	cfg  Config
-	part *static.Partitioner
+	part partition.Partitioner
 }
 
 func New(cfg Config) *Orchestrator {
+	var p partition.Partitioner
+	switch cfg.Partitioner {
+	case "consistent":
+		p = consistent.New(cfg.Workers, cfg.Vnodes)
+	default:
+		p = static.New(cfg.Workers)
+	}
 	return &Orchestrator{
 		cfg:  cfg,
-		part: static.New(cfg.Workers),
+		part: p,
 	}
 }
 

@@ -16,6 +16,8 @@ func main() {
 	idleMs := flag.Int("idle_ms", 60000, "idle timeout ms")
 	maxKey := flag.Int("max_key", 4096, "max key bytes")
 	maxVal := flag.Int("max_val", 1<<20, "max value bytes")
+	partitioner := flag.String("partitioner", "static", "static|consistent")
+	vnodes := flag.Int("vnodes", 128, "number of virtual nodes per worker, for consistent hashing")
 	flag.Parse()
 
 	cfg := orchestrator.Config{
@@ -25,6 +27,8 @@ func main() {
 		MaxKeyBytes:   uint16(*maxKey),
 		MaxValueBytes: uint32(*maxVal),
 		Workers:       strings.Split(*workers, ","),
+		Partitioner:   *partitioner,
+		Vnodes:        *vnodes,
 	}
 
 	o := orchestrator.New(cfg)

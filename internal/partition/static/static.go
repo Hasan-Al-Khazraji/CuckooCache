@@ -1,11 +1,10 @@
 package static
 
-import "hash/fnv"
+import (
+	"hash/fnv"
 
-type Owners struct {
-	Primary   string
-	Secondary string
-}
+	"github.com/Hasan-Al-Khazraji/CuckooCache/internal/partition"
+)
 
 type Partitioner struct {
 	nodes []string
@@ -33,11 +32,11 @@ func (p *Partitioner) Remove(node string) {
 
 // TODO: use consistent hashing
 // Static modulo, simple but it moves many keys when membership changes
-func (p *Partitioner) OwnersFor(key string) Owners {
+func (p *Partitioner) OwnersFor(key string) partition.Owners {
 	h := fnv.New32a()
 	_, _ = h.Write([]byte(key))
 	idx := int(h.Sum32()) % len(p.nodes)
 	primary := p.nodes[idx]
 	secondary := p.nodes[(idx+1)%len(p.nodes)]
-	return Owners{Primary: primary, Secondary: secondary}
+	return partition.Owners{Primary: primary, Secondary: secondary}
 }
