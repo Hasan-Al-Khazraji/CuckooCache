@@ -5,5 +5,12 @@
 *.so
 *.dylib
 
+# Local build outputs
+bin/
+
+# Editor/tooling metadata
+.vscode/
+.cursor/
+
 # Test binary, built with `go test -c`
 *.test
